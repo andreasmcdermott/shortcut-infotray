@@ -1,27 +1,15 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-// #[tauri::command]
-// fn greet(name: &str) -> String {
-//     format!("Hello, {}! You've been greeted from Rust!", name)
-// }
-
-// fn main() {
-//     tauri::Builder::default()
-//         .invoke_handler(tauri::generate_handler![greet])
-//         .run(tauri::generate_context!())
-//         .expect("error while running tauri application");
-// }
 
 use tauri::{Builder, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, CustomMenuItem};
 use tauri_plugin_positioner::{Position, WindowExt};
+
+
 
 fn main() {
     let system_tray_menu = SystemTrayMenu::new()
         .add_item(CustomMenuItem::new("quit".to_string(), "Quit").accelerator("Cmd+Q"));
 
-    Builder::default()
+    let mut app = Builder::default()
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(system_tray_menu))
         .on_system_tray_event(|app, event| {
@@ -58,6 +46,9 @@ fn main() {
         //     },
         //     _ => {}
         // })
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("error while running tauri application");
+        
+    app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+    app.run(|_app_handle, _event| {});
 }

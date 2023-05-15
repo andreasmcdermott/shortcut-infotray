@@ -1,20 +1,6 @@
-import { AppState, useActiveStories } from "./AppState";
-import { ErrorBoundary, Show } from "solid-js";
-
-const ListOfStories = () => {
-  const activeStories = useActiveStories();
-  return (
-    <div>
-      <Show when={activeStories()} fallback={<p>Loading...</p>}>
-        <ul>
-          {activeStories().map((story) => (
-            <li>{story.name}</li>
-          ))}
-        </ul>
-      </Show>
-    </div>
-  );
-};
+import { AppState } from "./AppState";
+import { ErrorBoundary } from "solid-js";
+import { StoryDashboard } from "./StoryDashboard";
 
 export function App() {
   return (
@@ -29,10 +15,9 @@ export function App() {
         </div>
       )}
     >
-      <div class="container">
+      <div class="container pa3">
         <AppState>
-          <h1>Welcome to Shortcut!</h1>
-          <ListOfStories />
+          <StoryDashboard />
         </AppState>
       </div>
     </ErrorBoundary>

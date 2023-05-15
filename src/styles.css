@@ -42,8 +42,7 @@ body {
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
   color: #0f0f0f;
   background-color: #f6f6f6;
   width: 100%;

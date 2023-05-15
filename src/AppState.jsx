@@ -1,48 +1,24 @@
-import {
-  Show,
-  useContext,
-  onMount,
-  createContext,
-  createResource,
-  createSignal,
-  createEffect,
-} from "solid-js";
+import { Show, useContext, createContext } from "solid-js";
 import { AuthScreen } from "./screens/AuthScreen";
 import { fetchActiveStories, fetchCurrentUser } from "./api/request";
+import { createSignalWithLocalStorage } from "./utils/createSignalWithLocalStorage";
+import { createResourceWithRefetch } from "./utils/createResourceWithRefetch";
 
-const AppStateContext = createContext({});
+const AppStateContext = createContext({ activeStories: [] });
 
 export function AppState(props) {
-  const [ready, setReady] = createSignal(false);
-  const [apiKey, setApiKey] = createSignal(null);
+  const [apiKey, setApiKey] = createSignalWithLocalStorage("apiKey", null);
 
-  onMount(() => {
-    const storedApiKey = localStorage.getItem("apiKey");
-    setApiKey(storedApiKey);
-    setReady(true);
-  });
-
-  createEffect(() => {
-    if (apiKey()) {
-      localStorage.setItem("apiKey", apiKey());
-    }
-  });
-
-  const [user] = createResource(apiKey, fetchCurrentUser);
-  const [activeStories] = createResource(
+  const [user] = createResourceWithRefetch(apiKey, fetchCurrentUser);
+  const [activeStories] = createResourceWithRefetch(
     () => user() && apiKey(),
     fetchActiveStories
   );
 
   return (
     <AppStateContext.Provider value={{ activeStories }}>
-      <Show when={ready}>
-        <Show
-          when={() => state.apiKey}
-          fallback={<AuthScreen onSave={setApiKey} />}
-        >
-          {props.children}
-        </Show>
+      <Show when={apiKey} fallback={<AuthScreen onSave={setApiKey} />}>
+        {props.children}
       </Show>
     </AppStateContext.Provider>
   );
