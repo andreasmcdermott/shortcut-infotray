@@ -1,6 +1,7 @@
 import { AppState } from "./AppState";
 import { ErrorBoundary } from "solid-js";
 import { StoryDashboard } from "./StoryDashboard";
+import { IterationDashboard } from "./IterationDashboard";
 
 export function App() {
   return (
@@ -15,9 +16,10 @@ export function App() {
         </div>
       )}
     >
-      <div class="container pa3">
+      <div class="container pa3 flex flex-column g3">
         <AppState>
           <StoryDashboard />
+          <IterationDashboard />
         </AppState>
       </div>
     </ErrorBoundary>

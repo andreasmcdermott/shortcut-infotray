@@ -13,6 +13,8 @@ const StoryTypeBadge = (props) => (
     style={`width: 8px; height: 8px; ${
       props.highlight ? "transform: scale(1.5);" : ""
     }`}
+    onMouseEnter={props.onMouseEnter}
+    onMouseLeave={props.onMouseLeave}
   />
 );
 const StoryName = (props) => (
@@ -57,7 +59,7 @@ export const StoryDashboard = () => {
   const [stateName, setStateName] = createSignal("");
 
   return (
-    <div class="flex flex-column g3">
+    <div class="flex flex-column g2">
       <Show when={activeStories()} fallback={<p>Loading...</p>}>
         <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Active Stories</h2>
         <div class="flex flex-column g2">
@@ -119,7 +121,7 @@ export const StoryDashboard = () => {
           <For each={activeStories()}>
             {(story) => (
               <li
-                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 overflow-hidden pointer"
+                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 overflow-hidden"
                 onMouseEnter={() => {
                   setStateName(story.state.name);
                   setCurrentStory(story.id);
