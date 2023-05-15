@@ -23,6 +23,17 @@ export const fetchCurrentUser = withCache(async (apiKey) => {
   return data;
 });
 
+const fetchWorkflowsAndStates = async (apiKey, workflows) => {
+  const data = await Promise.all(
+    Object.keys(workflows).map((workflowId) =>
+      fetch(`${URL}/api/v3/workflows/${workflowId}`, {
+        headers: { [TokenKey]: apiKey },
+      }).then((res) => res.json())
+    )
+  );
+  return data;
+};
+
 export const fetchActiveStories = async (apiKey) => {
   const user = await fetchCurrentUser(apiKey);
   const res = await fetch(
@@ -34,7 +45,27 @@ export const fetchActiveStories = async (apiKey) => {
     }
   );
   const data = await res.json();
-  return data.data;
+  const stories = data.data.sort((a, b) => a.name.localeCompare(b.name));
+  const usedWorkflowsAndStates = stories
+    .map((story) => [story.workflow_id, story.workflow_state_id])
+    .reduce((acc, [workflowId, stateId]) => {
+      if (!acc[workflowId]) acc[workflowId] = [];
+      if (!acc[workflowId].includes(stateId)) acc[workflowId].push(stateId);
+      return acc;
+    }, {});
+  const workflows = await fetchWorkflowsAndStates(
+    apiKey,
+    usedWorkflowsAndStates
+  );
+  stories.forEach((story) => {
+    const workflow = workflows.find(
+      (workflow) => workflow.id === story.workflow_id
+    );
+    const state = workflow.states.find(
+      (state) => state.id === story.workflow_state_id
+    );
+    story.workflow = workflow;
+    story.state = state;
+  });
+  return stories;
 };
-
-// 645ebb40-02f8-4351-8a56-6a12f3d3d490
