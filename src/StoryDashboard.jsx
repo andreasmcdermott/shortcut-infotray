@@ -1,17 +1,18 @@
-import { Show, createMemo } from "solid-js";
+import { For, Show, createMemo, createSignal } from "solid-js";
 import { useActiveStories } from "./AppState";
-import { For } from "solid-js";
 
 const StoryTypeBadge = (props) => (
   <span
-    class={`${
+    class={`flex-none br-100 ba ${
       props.type === "feature"
         ? "bg-yellow b--gold"
         : props.type === "bug"
         ? "bg-light-red b--dark-red"
         : "bg-moon-gray b--gray"
-    } br-100 flex-none ba`}
-    style="width: 6px; height: 6px;"
+    }`}
+    style={`width: 8px; height: 8px; ${
+      props.highlight ? "transform: scale(1.5);" : ""
+    }`}
   />
 );
 const StoryName = (props) => (
@@ -20,6 +21,7 @@ const StoryName = (props) => (
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
+
   const storiesByWorkflowAndState = createMemo(() =>
     (activeStories() || []).reduce((acc, story) => {
       if (!acc[story.workflow_id]) {
@@ -51,15 +53,23 @@ export const StoryDashboard = () => {
     }, {})
   );
 
+  const [currentStory, setCurrentStory] = createSignal(null);
+  const [stateName, setStateName] = createSignal("");
+
   return (
-    <div class="flex flex-column g2">
+    <div class="flex flex-column g3">
       <Show when={activeStories()} fallback={<p>Loading...</p>}>
         <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Active Stories</h2>
         <div class="flex flex-column g2">
           <For each={Object.values(storiesByWorkflowAndState())}>
             {({ workflow, statesByType, storiesByState }) => (
               <div class="flex flex-column g1">
-                <h3 class="pa0 ma0 f7 lh-solid">{workflow.name}</h3>
+                <h3 class="pa0 ma0 f7 lh-solid">
+                  {workflow.name}
+                  <Show when={stateName}>
+                    <smaller class="normal">: {stateName()}</smaller>
+                  </Show>
+                </h3>
                 <div class="flex g1">
                   <For each={Object.entries(statesByType)}>
                     {([type, { states, numStories }]) => (
@@ -70,6 +80,8 @@ export const StoryDashboard = () => {
                         <For each={states}>
                           {(state) => (
                             <div
+                              onMouseEnter={() => setStateName(state.name)}
+                              onMouseLeave={() => setStateName("")}
                               class={`flex g1 flex-auto flex-wrap bg-white br2 pa1 bb b--moon-gray`}
                               style={`flex-grow: ${
                                 (storiesByState[state.id]?.stories || [])
@@ -78,12 +90,18 @@ export const StoryDashboard = () => {
                                 states.length < 2 ? 100 : 50
                               }%`}
                             >
-                              {/* <h4 class="pa0 ma0 f7 lh-solid">{state.name}</h4> */}
                               <For
                                 each={storiesByState[state.id]?.stories || []}
                               >
                                 {(story) => (
-                                  <StoryTypeBadge type={story.story_type} />
+                                  <StoryTypeBadge
+                                    type={story.story_type}
+                                    highlight={story.id === currentStory()}
+                                    onMouseEnter={() =>
+                                      setCurrentStory(story.id)
+                                    }
+                                    onMouseLeave={() => setCurrentStory(null)}
+                                  />
                                 )}
                               </For>
                             </div>
@@ -97,12 +115,25 @@ export const StoryDashboard = () => {
             )}
           </For>
         </div>
-        <ul class="list ph2 pv1 ma0 bg-white br3 bb b--moon-gray">
+        <ul class="list ph0 pv1 ma0 bg-white br3 bb b--moon-gray">
           <For each={activeStories()}>
-            {(item) => (
-              <li class="f6 flex pa0 ma0 g2 items-center mw-100 overflow-hidden ">
-                <StoryTypeBadge type={item.story_type} />
-                <StoryName>{item.name}</StoryName>
+            {(story) => (
+              <li
+                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 overflow-hidden pointer"
+                onMouseEnter={() => {
+                  setStateName(story.state.name);
+                  setCurrentStory(story.id);
+                }}
+                onMouseLeave={() => {
+                  setStateName("");
+                  setCurrentStory(null);
+                }}
+              >
+                <StoryTypeBadge
+                  type={story.story_type}
+                  highlight={story.id === currentStory()}
+                />
+                <StoryName>{story.name}</StoryName>
               </li>
             )}
           </For>
