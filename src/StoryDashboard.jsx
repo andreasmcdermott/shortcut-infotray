@@ -56,39 +56,44 @@ export const StoryDashboard = () => {
   );
 
   const [currentStory, setCurrentStory] = createSignal(null);
-  const [stateName, setStateName] = createSignal("");
+  const [stateName, setStateName] = createSignal({});
 
   return (
     <div class="flex flex-column g2">
       <Show when={activeStories()} fallback={<p>Loading...</p>}>
-        <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Active Stories</h2>
+        <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Your Active Stories</h2>
         <div class="flex flex-column g2">
           <For each={Object.values(storiesByWorkflowAndState())}>
             {({ workflow, statesByType, storiesByState }) => (
               <div class="flex flex-column g1">
                 <h3 class="pa0 ma0 f7 lh-solid">
                   {workflow.name}
-                  <Show when={stateName}>
-                    <smaller class="normal">: {stateName()}</smaller>
+                  <Show when={stateName().workflow_id === workflow.id}>
+                    <span class="normal ml2">{stateName().state_name}</span>
                   </Show>
                 </h3>
                 <div class="flex g1">
                   <For each={Object.entries(statesByType)}>
-                    {([type, { states, numStories }]) => (
+                    {([, { states, numStories }]) => (
                       <div
                         class="flex g1 flex-auto pa1 br3 bg-light-gray"
-                        style={`flex-grow: ${numStories}; min-width: 25px;`}
+                        style={`flex-grow: ${numStories}; min-width: 15px;`}
                       >
                         <For each={states}>
                           {(state) => (
                             <div
-                              onMouseEnter={() => setStateName(state.name)}
-                              onMouseLeave={() => setStateName("")}
+                              onMouseEnter={() =>
+                                setStateName({
+                                  workflow_id: workflow.id,
+                                  state_name: state.name,
+                                })
+                              }
+                              onMouseLeave={() => setStateName({})}
                               class={`flex g1 flex-auto flex-wrap bg-white br2 pa1 bb b--moon-gray`}
                               style={`flex-grow: ${
                                 (storiesByState[state.id]?.stories || [])
                                   .length + 1
-                              }; min-width: 25px; max-width: ${
+                              }; min-width: 15px; max-width: ${
                                 states.length < 2 ? 100 : 50
                               }%`}
                             >
