@@ -1,34 +1,10 @@
+/** @jsxImportSource solid-js */
+
 import { For, Show, createMemo, createSignal } from "solid-js";
 import { useActiveStories } from "./AppState";
-
-const StoryTypeBadge = (props) => (
-  <span
-    class={`flex-none br-100 ba ${
-      props.type === "feature"
-        ? "bg-yellow b--gold"
-        : props.type === "bug"
-        ? "bg-light-red b--dark-red"
-        : "bg-moon-gray b--gray"
-    }`}
-    style={`width: 8px; height: 8px; ${
-      props.highlight ? "transform: scale(1.5);" : ""
-    }`}
-    onMouseEnter={props.onMouseEnter}
-    onMouseLeave={props.onMouseLeave}
-  />
-);
-const StoryName = (props) => (
-  <span class="flex-auto truncate">{props.children}</span>
-);
-const StoryActions = (props) => {
-  return (
-    <div class="hover-action absolute h-100 bg-white ph2" style="right: 0;">
-      <a href={props.story.app_url} target="_blank" rel="noopener noreferrer">
-        Open
-      </a>
-    </div>
-  );
-};
+import { StoryTypeBadge } from "./components/StoryTypeBadge";
+import { StoryName } from "./components/StoryName";
+import { StoryInlineActions } from "./components/StoryInlineActions";
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
@@ -151,7 +127,7 @@ export const StoryDashboard = () => {
                   highlight={story.id === currentStory()}
                 />
                 <StoryName>{story.name}</StoryName>
-                <StoryActions story={story} />
+                <StoryInlineActions story={story} />
               </li>
             )}
           </For>

@@ -1,3 +1,5 @@
+/** @jsxImportSource solid-js */
+
 import { AppState } from "./AppState";
 import { ErrorBoundary } from "solid-js";
 import { StoryDashboard } from "./StoryDashboard";

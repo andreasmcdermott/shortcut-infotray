@@ -1,31 +1,9 @@
-import { Show, createSignal } from "solid-js";
-import { useApiKey, useCurrentIterations } from "./AppState";
+/** @jsxImportSource solid-js */
 
-const StoryOwnerBadge = (props) => (
-  <span
-    class={`flex-none br-100 ba b--light-silver relative overflow-hidden ${
-      props.owner ? "" : "bg-light-gray"
-    }`}
-    style={`width: 14px; height: 14px; ${
-      props.highlight ? "transform: scale(1.5);" : ""
-    }`}
-    onMouseEnter={props.onMouseEnter}
-    onMouseLeave={props.onMouseLeave}
-  >
-    <Show when={props.owners?.[0]?.profile?.display_icon?.url}>
-      <img
-        class="w-100 h-100 absolute"
-        src={`${
-          props.owners?.[0]?.profile?.display_icon?.url
-        }?token=${useApiKey()}`}
-        alt={props.owners?.[0]?.profile?.name}
-      />
-    </Show>
-  </span>
-);
-const StoryName = (props) => (
-  <span class="flex-auto truncate">{props.children}</span>
-);
+import { Show, createSignal, For } from "solid-js";
+import { useApiKey, useCurrentIterations } from "./AppState";
+import { ProgressBar } from "./components/ProgressBar";
+import { StoryOwnerBadge } from "./components/StoryOwnerBadge";
 
 export const IterationDashboard = () => {
   const currentIterations = useCurrentIterations();
@@ -109,24 +87,11 @@ export const IterationDashboard = () => {
                     </a>
                   </h3>
                   <Show when={num_stories > 0}>
-                    <div
-                      class="w-100 br3 bg-moon-gray flex"
-                      style="height: 4px;"
-                    >
-                      <div
-                        class="bg-dark-green br3"
-                        style={`height: 4px; width: ${
-                          (iteration.stats.num_stories_done / num_stories) * 100
-                        }%;`}
-                      />
-                      <div
-                        class="bg-green br3"
-                        style={`height: 4px; width: ${
-                          (iteration.stats.num_stories_started / num_stories) *
-                          100
-                        }%;`}
-                      />
-                    </div>
+                    <ProgressBar
+                      numStories={num_stories}
+                      numDone={iteration.stats.num_stories_done}
+                      numInProgress={iteration.stats.num_stories_started}
+                    />
                     <For each={Object.values(storiesByWorkflowAndState)}>
                       {({ workflow, statesByType, storiesByState }) => (
                         <div class="flex flex-column g1">

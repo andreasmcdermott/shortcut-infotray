@@ -1,3 +1,5 @@
+/** @jsxImportSource solid-js */
+
 import { Show, useContext, createContext } from "solid-js";
 import { AuthScreen } from "./screens/AuthScreen";
 import {
