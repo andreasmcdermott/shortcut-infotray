@@ -20,6 +20,15 @@ const StoryTypeBadge = (props) => (
 const StoryName = (props) => (
   <span class="flex-auto truncate">{props.children}</span>
 );
+const StoryActions = (props) => {
+  return (
+    <div class="hover-action absolute h-100 bg-white ph2" style="right: 0;">
+      <a href={props.story.app_url} target="_blank" rel="noopener noreferrer">
+        Open
+      </a>
+    </div>
+  );
+};
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
@@ -122,11 +131,12 @@ export const StoryDashboard = () => {
             )}
           </For>
         </div>
-        <ul class="list ph0 pv1 ma0 bg-white br3 bb b--moon-gray">
+
+        <ul class="list ph0 pv1 ma0 bg-white br3 bb b--moon-gray ">
           <For each={activeStories()}>
             {(story) => (
               <li
-                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 overflow-hidden"
+                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
                 onMouseEnter={() => {
                   setStateName(story.state.name);
                   setCurrentStory(story.id);
@@ -141,6 +151,7 @@ export const StoryDashboard = () => {
                   highlight={story.id === currentStory()}
                 />
                 <StoryName>{story.name}</StoryName>
+                <StoryActions story={story} />
               </li>
             )}
           </For>

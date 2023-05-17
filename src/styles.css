@@ -48,6 +48,15 @@ body {
   width: 100%;
   height: 100%;
 }
+
+.hover-action {
+  display: none;
+}
+
+*:hover > .hover-action {
+  display: block;
+}
+
 @media (prefers-color-scheme: dark) {
   .container {
     color: #f6f6f6;
