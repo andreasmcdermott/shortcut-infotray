@@ -4,6 +4,7 @@ import { Show, createSignal, For } from "solid-js";
 import { useApiKey, useCurrentIterations } from "./AppState";
 import { ProgressBar } from "./components/ProgressBar";
 import { StoryOwnerBadge } from "./components/StoryOwnerBadge";
+import { Link } from "./components/Link";
 
 export const IterationDashboard = () => {
   const currentIterations = useCurrentIterations();
@@ -77,14 +78,9 @@ export const IterationDashboard = () => {
                     <span class="normal">
                       {iteration.start_date} &#8212; {iteration.end_date}
                     </span>
-                    <a
-                      style="margin-left: auto;"
-                      href={iteration.app_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link style="margin-left: auto;" href={iteration.app_url}>
                       Open
-                    </a>
+                    </Link>
                   </h3>
                   <Show when={num_stories > 0}>
                     <ProgressBar

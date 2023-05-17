@@ -38,14 +38,14 @@ fn main() {
                 _ => {}
             }
         })
-        .on_window_event(|event| match event.event() {
-            tauri::WindowEvent::Focused(is_focused) => {
-                if !is_focused {
-                    event.window().hide().unwrap();
-                }
-            },
-            _ => {}
-        })
+        // .on_window_event(|event| match event.event() {
+        //     tauri::WindowEvent::Focused(is_focused) => {
+        //         if !is_focused {
+        //             event.window().hide().unwrap();
+        //         }
+        //     },
+        //     _ => {}
+        // })
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
         

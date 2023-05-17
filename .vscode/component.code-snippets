@@ -21,8 +21,8 @@
     "body": [
       "/** @jsxImportSource solid-js */",
       "",
-      "export const $1 = () => {",
-      "",
+      "export const ${TM_FILENAME_BASE/(.+)/${0:/capitalize}/} = (props) => {",
+      "  $1",
       "};",
       ""
     ],
