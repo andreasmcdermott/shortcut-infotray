@@ -1,15 +1,15 @@
 /** @jsxImportSource solid-js */
 
-import { Show, createSignal, For } from "solid-js";
+import { Show, For } from "solid-js";
 import { useApiKey, useCurrentIterations } from "./AppState";
 import { ProgressBar } from "./components/ProgressBar";
 import { StoryOwnerBadge } from "./components/StoryOwnerBadge";
 import { Link } from "./components/Link";
+import { MiniKanban } from "./components/MiniKanban";
 
 export const IterationDashboard = () => {
   const currentIterations = useCurrentIterations();
   const apiKey = useApiKey();
-  const [stateName, setStateName] = createSignal({});
 
   return (
     <div class="flex flex-column g2">
@@ -90,71 +90,18 @@ export const IterationDashboard = () => {
                     />
                     <For each={Object.values(storiesByWorkflowAndState)}>
                       {({ workflow, statesByType, storiesByState }) => (
-                        <div class="flex flex-column g1">
-                          <h3 class="pa0 ma0 f7 lh-solid">
-                            {workflow.name}
-                            <Show
-                              when={stateName().workflow_id === workflow.id}
-                            >
-                              <span class="normal ml2">
-                                {stateName().state_name}
-                              </span>
-                            </Show>
-                          </h3>
-                          <div class="flex g1">
-                            <For each={Object.entries(statesByType)}>
-                              {([, { states, numStories }]) => (
-                                <div
-                                  class={`flex g1 ${
-                                    numStories ? "flex-auto" : "flex-none"
-                                  } pa1 br3 bg-light-gray`}
-                                  style={`flex-grow: ${numStories}; min-width: 15px;`}
-                                >
-                                  <For each={states}>
-                                    {(state) => (
-                                      <div
-                                        onMouseEnter={() =>
-                                          setStateName({
-                                            workflow_id: workflow.id,
-                                            state_name: state.name,
-                                          })
-                                        }
-                                        onMouseLeave={() => setStateName({})}
-                                        class={`flex g1 ${
-                                          storiesByState[state.id]?.stories
-                                            ?.length
-                                            ? "flex-auto"
-                                            : "flex-none"
-                                        } flex-wrap bg-white br2 pa1 bb b--moon-gray`}
-                                        style={`flex-grow: ${
-                                          (
-                                            storiesByState[state.id]?.stories ||
-                                            []
-                                          ).length + 1
-                                        }; min-width: 15px; max-width: ${
-                                          states.length < 2 ? 100 : 50
-                                        }%`}
-                                      >
-                                        <For
-                                          each={
-                                            storiesByState[state.id]?.stories ||
-                                            []
-                                          }
-                                        >
-                                          {(story) => (
-                                            <StoryOwnerBadge
-                                              owners={story.owners}
-                                            />
-                                          )}
-                                        </For>
-                                      </div>
-                                    )}
-                                  </For>
-                                </div>
+                        <MiniKanban
+                          workflowName={workflow.name}
+                          states={Object.values(statesByType)}
+                        >
+                          {(state) => (
+                            <For each={storiesByState[state.id]?.stories || []}>
+                              {(story) => (
+                                <StoryOwnerBadge owners={story.owners} />
                               )}
                             </For>
-                          </div>
-                        </div>
+                          )}
+                        </MiniKanban>
                       )}
                     </For>
                   </Show>

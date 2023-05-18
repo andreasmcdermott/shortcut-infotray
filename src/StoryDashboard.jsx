@@ -5,6 +5,7 @@ import { useActiveStories } from "./AppState";
 import { StoryTypeBadge } from "./components/StoryTypeBadge";
 import { StoryName } from "./components/StoryName";
 import { StoryInlineActions } from "./components/StoryInlineActions";
+import { MiniKanban } from "./components/MiniKanban";
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
@@ -41,7 +42,6 @@ export const StoryDashboard = () => {
   );
 
   const [currentStory, setCurrentStory] = createSignal(null);
-  const [stateName, setStateName] = createSignal({});
 
   return (
     <div class="flex flex-column g2">
@@ -50,60 +50,23 @@ export const StoryDashboard = () => {
         <div class="flex flex-column g2">
           <For each={Object.values(storiesByWorkflowAndState())}>
             {({ workflow, statesByType, storiesByState }) => (
-              <div class="flex flex-column g1">
-                <h3 class="pa0 ma0 f7 lh-solid">
-                  {workflow.name}
-                  <Show when={stateName().workflow_id === workflow.id}>
-                    <span class="normal ml2">{stateName().state_name}</span>
-                  </Show>
-                </h3>
-                <div class="flex g1">
-                  <For each={Object.entries(statesByType)}>
-                    {([, { states, numStories }]) => (
-                      <div
-                        class="flex g1 flex-auto pa1 br3 bg-light-gray"
-                        style={`flex-grow: ${numStories}; min-width: 15px;`}
-                      >
-                        <For each={states}>
-                          {(state) => (
-                            <div
-                              onMouseEnter={() =>
-                                setStateName({
-                                  workflow_id: workflow.id,
-                                  state_name: state.name,
-                                })
-                              }
-                              onMouseLeave={() => setStateName({})}
-                              class={`flex g1 flex-auto flex-wrap bg-white br2 pa1 bb b--moon-gray`}
-                              style={`flex-grow: ${
-                                (storiesByState[state.id]?.stories || [])
-                                  .length + 1
-                              }; min-width: 15px; max-width: ${
-                                states.length < 2 ? 100 : 50
-                              }%`}
-                            >
-                              <For
-                                each={storiesByState[state.id]?.stories || []}
-                              >
-                                {(story) => (
-                                  <StoryTypeBadge
-                                    type={story.story_type}
-                                    highlight={story.id === currentStory()}
-                                    onMouseEnter={() =>
-                                      setCurrentStory(story.id)
-                                    }
-                                    onMouseLeave={() => setCurrentStory(null)}
-                                  />
-                                )}
-                              </For>
-                            </div>
-                          )}
-                        </For>
-                      </div>
+              <MiniKanban
+                workflowName={workflow.name}
+                states={Object.values(statesByType)}
+              >
+                {(state) => (
+                  <For each={storiesByState[state.id]?.stories || []}>
+                    {(story) => (
+                      <StoryTypeBadge
+                        type={story.story_type}
+                        highlight={story.id === currentStory()}
+                        onMouseEnter={() => setCurrentStory(story.id)}
+                        onMouseLeave={() => setCurrentStory(null)}
+                      />
                     )}
                   </For>
-                </div>
-              </div>
+                )}
+              </MiniKanban>
             )}
           </For>
         </div>
@@ -114,11 +77,9 @@ export const StoryDashboard = () => {
               <li
                 class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
                 onMouseEnter={() => {
-                  setStateName(story.state.name);
                   setCurrentStory(story.id);
                 }}
                 onMouseLeave={() => {
-                  setStateName("");
                   setCurrentStory(null);
                 }}
               >

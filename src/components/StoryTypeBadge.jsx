@@ -9,7 +9,7 @@ export const StoryTypeBadge = (props) => (
         ? "bg-light-red b--dark-red"
         : "bg-moon-gray b--gray"
     }`}
-    style={`width: 8px; height: 8px; ${
+    style={`width: 10px; height: 10px; ${
       props.highlight ? "transform: scale(1.5);" : ""
     }`}
     onMouseEnter={props.onMouseEnter}
