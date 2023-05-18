@@ -8,8 +8,8 @@ export const MiniKanban = (props) => {
   const [activeState, setActiveState] = createSignal("");
   return (
     <div class="flex flex-column g1">
-      <h3 class="pa0 ma0 f7 lh-solid">
-        {props.workflowName}
+      <h3 class="pa0 ma0  normal lh-solid f6">
+        <span class="ttu tracked f7">{props.workflowName}</span>
         <Show when={activeState()}>
           <span class="normal ml2">{activeState()}</span>
         </Show>
@@ -36,7 +36,7 @@ export const MiniKanban = (props) => {
                     onMouseLeave={() => setActiveState("")}
                     class={`flex g1 ${
                       numStories ? "flex-auto" : "flex-none"
-                    } flex-wrap bg-white br2 pa1 bb b--moon-gray`}
+                    } flex-wrap bg-white br2 pa1`}
                     style={`flex-grow: ${
                       numStories + 1
                     }; min-width: 20px; max-width: ${

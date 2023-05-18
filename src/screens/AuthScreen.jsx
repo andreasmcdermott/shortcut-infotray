@@ -1,6 +1,6 @@
 export function AuthScreen(props) {
   return (
-    <div class="flex flex-column justify-center items-center g2">
+    <div class="flex flex-column justify-center items-center g3">
       <img
         src="/full_logo.png"
         alt=""
@@ -16,14 +16,14 @@ export function AuthScreen(props) {
         }}
       >
         <input
-          class="br2 pa2 ba w-100"
+          class="br2 pa3 ba w-100"
           type="text"
           name="apiKey"
           placeholder="API Key"
           required
         />
         <button
-          className="b bg-light-blue navy w-50 pa2 ba b--navy br2"
+          className="b bg-light-blue navy w-50 pa3 ba b--navy br2"
           type="submit"
         >
           Save

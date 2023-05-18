@@ -6,6 +6,7 @@ import { StoryTypeBadge } from "./components/StoryTypeBadge";
 import { StoryName } from "./components/StoryName";
 import { StoryInlineActions } from "./components/StoryInlineActions";
 import { MiniKanban } from "./components/MiniKanban";
+import { SectionTitle } from "./components/SectionTitle";
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
@@ -46,7 +47,7 @@ export const StoryDashboard = () => {
   return (
     <div class="flex flex-column g2">
       <Show when={activeStories()} fallback={<p>Loading...</p>}>
-        <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Your Active Stories</h2>
+        <SectionTitle>Your Active Stories</SectionTitle>
         <div class="flex flex-column g2">
           <For each={Object.values(storiesByWorkflowAndState())}>
             {({ workflow, statesByType, storiesByState }) => (
@@ -75,7 +76,7 @@ export const StoryDashboard = () => {
           <For each={activeStories()}>
             {(story) => (
               <li
-                class="f6 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
+                class="f5 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
                 onMouseEnter={() => {
                   setCurrentStory(story.id);
                 }}

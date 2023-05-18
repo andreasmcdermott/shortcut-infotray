@@ -6,6 +6,7 @@ import { ProgressBar } from "./components/ProgressBar";
 import { StoryOwnerBadge } from "./components/StoryOwnerBadge";
 import { Link } from "./components/Link";
 import { MiniKanban } from "./components/MiniKanban";
+import { SectionTitle } from "./components/SectionTitle";
 
 export const IterationDashboard = () => {
   const currentIterations = useCurrentIterations();
@@ -14,7 +15,7 @@ export const IterationDashboard = () => {
   return (
     <div class="flex flex-column g2">
       <Show when={currentIterations()} fallback={<p>Loading...</p>}>
-        <h2 class="pa0 ma0 f7 ttu tracked lh-solid">Current Iteration</h2>
+        <SectionTitle>Current Iteration</SectionTitle>
         <div class="flex flex-column g2">
           <For each={currentIterations()}>
             {(iteration) => {
@@ -66,7 +67,7 @@ export const IterationDashboard = () => {
 
               return (
                 <div class="flex flex-column g2">
-                  <h3 class="pa0 ma0 f7 lh-solid flex items-center g2">
+                  <h3 class="pa0 ma0 f6 lh-solid flex items-center g2">
                     <Show when={iteration.team?.display_icon?.url}>
                       <img
                         class="flex-none w1 h1 br-100 ba b--moon-gray"
