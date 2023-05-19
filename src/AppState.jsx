@@ -21,11 +21,11 @@ export function AppState(props) {
 
   const [user] = createResourceWithRefetch(apiKey, fetchCurrentUser);
   const [activeStories] = createResourceWithRefetch(
-    () => user() && apiKey(),
+    () => (user() ? apiKey() : null),
     fetchActiveStories
   );
   const [currentIterations] = createResourceWithRefetch(
-    () => user() && apiKey(),
+    () => (user() ? apiKey() : null),
     fetchCurrentIterations
   );
 

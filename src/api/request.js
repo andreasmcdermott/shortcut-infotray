@@ -9,34 +9,69 @@ export const request = async (apiKey, url) => {
   return data;
 };
 
-const withCache = (fn) => {
+const toCacheKey = (args) => {
+  return args.map((arg) => JSON.stringify(arg)).join("-");
+};
+
+const withSingleCache = (fn) => {
   let cacheKey = null;
   let cacheValue = null;
 
-  return async (apiKey) => {
-    if (cacheKey === apiKey) return cacheValue;
+  return async (...args) => {
+    const key = toCacheKey(args);
+    if (cacheKey === key) return cacheValue;
 
-    const result = await fn(apiKey);
-    cacheKey = apiKey;
+    const result = await fn(...args);
+    cacheKey = key;
     cacheValue = result;
     return result;
   };
 };
 
-export const fetchCurrentUser = withCache(async (apiKey) => {
+const withExpiringCache = (fn, maxAge = 36e5) => {
+  const cache = new Map();
+  return async (...args) => {
+    const key = toCacheKey(args);
+    const cacheItem = cache.get(key);
+    if (cacheItem && cacheItem.expiresAt > Date.now()) return cacheItem.value;
+
+    const result = await fn(...args);
+    cache.set(key, { value: result, expiresAt: Date.now() + maxAge });
+    return result;
+  };
+};
+
+export const fetchCurrentUser = withSingleCache(async (apiKey) => {
   const { id } = await request(apiKey, `member`);
   const data = await request(apiKey, `members/${id}`);
   return data;
 });
 
-const fetchWorkflowsAndStates = async (apiKey, workflows) => {
+const fetchWorkflowsAndStates = withExpiringCache(async (apiKey, workflows) => {
   const data = await Promise.all(
     Object.keys(workflows).map((workflowId) =>
       request(apiKey, `workflows/${workflowId}`)
     )
   );
   return data;
-};
+});
+
+export const fetchOwners = withExpiringCache(async (apiKey, ownerIds) => {
+  if (!ownerIds.length) return [];
+  const uniqueOwnerIds = [...new Set(ownerIds)];
+  const owners = await Promise.all(
+    uniqueOwnerIds.map((id) => request(apiKey, `members/${id}`))
+  );
+  return owners;
+});
+
+export const fetchGroups = withExpiringCache(async (apiKey, groupIds) => {
+  if (!groupIds.length) return [];
+  const groups = await Promise.all(
+    groupIds.map((groupId) => request(apiKey, `groups/${groupId}`))
+  );
+  return groups.filter((group) => !group.archived);
+});
 
 export const fetchActiveStories = async (apiKey) => {
   const user = await fetchCurrentUser(apiKey);
@@ -71,23 +106,6 @@ export const fetchActiveStories = async (apiKey) => {
     story.state = state;
   });
   return stories;
-};
-
-export const fetchOwners = async (apiKey, ownerIds) => {
-  if (!ownerIds.length) return [];
-  const uniqueOwnerIds = [...new Set(ownerIds)];
-  const owners = await Promise.all(
-    uniqueOwnerIds.map((id) => request(apiKey, `members/${id}`))
-  );
-  return owners;
-};
-
-export const fetchGroups = async (apiKey, groupIds) => {
-  if (!groupIds.length) return [];
-  const groups = await Promise.all(
-    groupIds.map((groupId) => request(apiKey, `groups/${groupId}`))
-  );
-  return groups.filter((group) => !group.archived);
 };
 
 export const fetchCurrentIterations = async (apiKey) => {
