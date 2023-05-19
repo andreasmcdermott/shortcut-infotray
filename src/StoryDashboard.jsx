@@ -47,7 +47,7 @@ export const StoryDashboard = () => {
   return (
     <div class="flex flex-column g2">
       <Show when={activeStories()} fallback={<p>Loading...</p>}>
-        <SectionTitle>Your Active Stories</SectionTitle>
+        <SectionTitle>Active Stories</SectionTitle>
         <div class="flex flex-column g2">
           <For each={Object.values(storiesByWorkflowAndState())}>
             {({ workflow, statesByType, storiesByState }) => (

@@ -7,6 +7,7 @@ import { StoryOwnerBadge } from "./components/StoryOwnerBadge";
 import { Link } from "./components/Link";
 import { MiniKanban } from "./components/MiniKanban";
 import { SectionTitle } from "./components/SectionTitle";
+import { IterationHeader } from "./components/IterationHeader";
 
 export const IterationDashboard = () => {
   const currentIterations = useCurrentIterations();
@@ -67,22 +68,8 @@ export const IterationDashboard = () => {
 
               return (
                 <div class="flex flex-column g2">
-                  <h3 class="pa0 ma0 f6 lh-solid flex items-center g2">
-                    <Show when={iteration.team?.display_icon?.url}>
-                      <img
-                        class="flex-none w1 h1 br-100 ba b--moon-gray"
-                        src={`${iteration.team.display_icon.url}?token=${apiKey}`}
-                        alt=""
-                      />
-                    </Show>
-                    <span>{iteration.name}</span>
-                    <span class="normal">
-                      {iteration.start_date} &#8212; {iteration.end_date}
-                    </span>
-                    <Link style="margin-left: auto;" href={iteration.app_url}>
-                      Open
-                    </Link>
-                  </h3>
+                  <IterationHeader iteration={iteration} />
+
                   <Show when={num_stories > 0}>
                     <ProgressBar
                       numStories={num_stories}
