@@ -1,5 +1,6 @@
 const URL = "https://api.app.shortcut.com";
 const TokenKey = "Shortcut-Token";
+import { HOURS, DAYS } from "../utils/ms";
 
 export const request = async (apiKey, url) => {
   const res = await fetch(`${URL}/api/v3/${url}`, {
@@ -28,7 +29,7 @@ const withSingleCache = (fn) => {
   };
 };
 
-const withExpiringCache = (fn, maxAge = 36e5) => {
+const withExpiringCache = (fn, maxAge = HOURS(1)) => {
   const cache = new Map();
   return async (...args) => {
     const key = toCacheKey(args);
@@ -78,10 +79,16 @@ export const fetchActiveStories = async (apiKey) => {
   const data = await request(
     apiKey,
     `search/stories?page_size=25&query=${encodeURIComponent(
-      `!is:archived !is:done owner:${user.profile.mention_name}`
+      `!is:archived owner:${user.profile.mention_name}`
     )}`
   );
-  const stories = data.data.sort((a, b) => a.name.localeCompare(b.name));
+  const stories = data.data
+    .filter(
+      (story) =>
+        !story.completed ||
+        new Date(story.completed_at).getTime() < Date.now() + DAYS(10)
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
   const usedWorkflowsAndStates = stories
     .map((story) => [story.workflow_id, story.workflow_state_id])
     .reduce((acc, [workflowId, stateId]) => {
@@ -165,7 +172,6 @@ export const fetchCurrentIterations = async (apiKey) => {
       );
     });
     it.stories = stories;
-    console.log(stories);
   }
   return currentIterations;
 };

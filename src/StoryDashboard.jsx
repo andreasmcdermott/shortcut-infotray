@@ -7,6 +7,7 @@ import { StoryName } from "./components/StoryName";
 import { StoryInlineActions } from "./components/StoryInlineActions";
 import { MiniKanban } from "./components/MiniKanban";
 import { SectionTitle } from "./components/SectionTitle";
+import { createEffect } from "solid-js";
 
 export const StoryDashboard = () => {
   const activeStories = useActiveStories();
@@ -43,6 +44,16 @@ export const StoryDashboard = () => {
   );
 
   const [currentStory, setCurrentStory] = createSignal(null);
+  createEffect(() => {
+    if (currentStory()) {
+      const storyEl = document.body.querySelector(
+        `[data-active-stories] [data-story-id="${currentStory()}"]`
+      );
+      if (storyEl) {
+        storyEl.scrollIntoView();
+      }
+    }
+  });
 
   return (
     <div class="flex flex-column g2">
@@ -72,28 +83,35 @@ export const StoryDashboard = () => {
           </For>
         </div>
 
-        <ul class="list ph0 pv1 ma0 bg-white br3 bb b--moon-gray ">
-          <For each={activeStories()}>
-            {(story) => (
-              <li
-                class="f5 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
-                onMouseEnter={() => {
-                  setCurrentStory(story.id);
-                }}
-                onMouseLeave={() => {
-                  setCurrentStory(null);
-                }}
-              >
-                <StoryTypeBadge
-                  type={story.story_type}
-                  highlight={story.id === currentStory()}
-                />
-                <StoryName>{story.name}</StoryName>
-                <StoryInlineActions story={story} />
-              </li>
-            )}
-          </For>
-        </ul>
+        <div class="pv1 bg-white br3 bb b--moon-gray">
+          <ul
+            data-active-stories
+            class="list pa0 ma0"
+            style="max-height: 140px; overflow-y: auto;"
+          >
+            <For each={activeStories()}>
+              {(story) => (
+                <li
+                  data-story-id={story.id}
+                  class="f5 flex pa0 ma0 ph2 g2 items-center mw-100 relative overflow-hidden"
+                  onMouseEnter={() => {
+                    setCurrentStory(story.id);
+                  }}
+                  onMouseLeave={() => {
+                    setCurrentStory(null);
+                  }}
+                >
+                  <StoryTypeBadge
+                    type={story.story_type}
+                    highlight={story.id === currentStory()}
+                  />
+                  <StoryName>{story.name}</StoryName>
+                  <StoryInlineActions story={story} />
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
       </Show>
     </div>
   );
